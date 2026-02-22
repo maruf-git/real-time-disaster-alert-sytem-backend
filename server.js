@@ -7,6 +7,22 @@ const db = require('./config/db');
 const scheduler = require('./services/scheduler');
 scheduler.start();
 
+// Ensure default admin exists
+async function ensureDefaultAdmin() {
+    try {
+        const bcrypt = require('bcryptjs');
+        const [rows] = await db.execute('SELECT id FROM admins WHERE email = ?', ['hstu@gmail.com']);
+        if (rows.length === 0) {
+            const hashedPassword = await bcrypt.hash('hstuadmin', 10);
+            await db.execute('INSERT INTO admins (email, password) VALUES (?, ?)', ['hstu@gmail.com', hashedPassword]);
+            console.log('Default admin (hstu@gmail.com) automatically created.');
+        }
+    } catch (err) {
+        console.error('Error ensuring default admin:', err.message);
+    }
+}
+ensureDefaultAdmin();
+
 const app = express();
 
 // Middleware

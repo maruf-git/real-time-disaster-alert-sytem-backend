@@ -143,6 +143,19 @@ async function checkRulesAndAlert(location, weatherData, earthquakeData = null) 
             }
         }
 
+        // ── Auto-deactivation pass (earthquakes) ──
+        // Earthquake alerts should be completely inactive if 30 minutes have passed since their creation.
+        // We find any active alerts for earthquake_magnitude disaster types that are > 30 mins old.
+        await db.execute(`
+            UPDATE alerts a
+            JOIN alert_rules ar ON a.disaster_id = ar.disaster_id
+            SET a.is_active = 0
+            WHERE ar.weather_condition = 'earthquake_magnitude'
+              AND a.is_active = 1
+              AND a.location_id = ?
+              AND a.created_at < NOW() - INTERVAL 30 MINUTE
+        `, [location.id]);
+
     } catch (error) {
         console.error('Error checking rules:', error.message);
     }
