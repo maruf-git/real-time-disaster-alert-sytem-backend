@@ -31,7 +31,7 @@ app.use(express.json());
 
 // Routes Placeholder
 app.get('/', (req, res) => {
-    res.send('11th Hour Disaster Alert System API is running');
+    res.send('Real-time Disaster Alert System API is running');
 });
 
 // Import Routes

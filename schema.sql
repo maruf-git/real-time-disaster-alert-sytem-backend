@@ -4,15 +4,7 @@
 CREATE DATABASE IF NOT EXISTS disaster_alert_db;
 USE disaster_alert_db;
 
--- 1. Users
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'user') DEFAULT 'user',
-    location_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- 1b. Admins
 CREATE TABLE IF NOT EXISTS admins (
@@ -120,4 +112,4 @@ CREATE TABLE IF NOT EXISTS alerts (
 );
 
 
--- Note: users.location_id FK is added programmatically by seed.js to support re-runs.
+
