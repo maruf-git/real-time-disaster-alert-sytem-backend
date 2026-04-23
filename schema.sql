@@ -1,11 +1,8 @@
 -- Database: disaster_alert_db
 -- Schema Version: 2.0 (fully synchronized with application code)
-
-CREATE DATABASE IF NOT EXISTS disaster_alert_db;
-USE disaster_alert_db;
-
-
-
+-- comment when using railway db
+-- CREATE DATABASE IF NOT EXISTS disaster_alert_db;
+-- USE disaster_alert_db;
 -- 1b. Admins
 CREATE TABLE IF NOT EXISTS admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -13,7 +10,6 @@ CREATE TABLE IF NOT EXISTS admins (
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 -- 2. Locations
 CREATE TABLE IF NOT EXISTS locations (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,7 +19,6 @@ CREATE TABLE IF NOT EXISTS locations (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 -- 3. Disasters
 -- is_active: allows disabling a disaster type without deleting rules
 CREATE TABLE IF NOT EXISTS disasters (
@@ -33,7 +28,6 @@ CREATE TABLE IF NOT EXISTS disasters (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 -- 4. Alert Rules
 -- location_id NULL = global rule (applies to every location)
 -- severity_level: the alert severity this rule produces
@@ -59,7 +53,6 @@ CREATE TABLE IF NOT EXISTS alert_rules (
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
     FOREIGN KEY (disaster_id) REFERENCES disasters(id) ON DELETE CASCADE
 );
-
 -- 5. Weather Logs
 -- aqi, earthquake_magnitude, earthquake_id: added to support co-logged context
 CREATE TABLE IF NOT EXISTS weather_logs (
@@ -76,7 +69,6 @@ CREATE TABLE IF NOT EXISTS weather_logs (
     fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
 );
-
 -- 6. Earthquake Logs
 -- usgs_id: USGS unique event ID; is_manual: true if triggered via admin simulate
 -- UNIQUE(location_id, usgs_id) prevents logging the same quake twice per location
@@ -90,7 +82,6 @@ CREATE TABLE IF NOT EXISTS earthquake_logs (
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
     UNIQUE KEY uq_location_usgs (location_id, usgs_id)
 );
-
 -- 7. Alerts
 -- external_id: USGS event ID for earthquake alerts (null for weather alerts)
 -- source: 'System' = auto-generated, 'Admin' = manually created
@@ -110,6 +101,3 @@ CREATE TABLE IF NOT EXISTS alerts (
     FOREIGN KEY (disaster_id) REFERENCES disasters(id) ON DELETE CASCADE,
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
 );
-
-
-

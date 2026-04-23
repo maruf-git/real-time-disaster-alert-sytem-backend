@@ -19,9 +19,11 @@ if (!process.env.DB_HOST) {
 }
 
 const DB_CONFIG = {
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
   multipleStatements: true,
 };
 
@@ -238,11 +240,12 @@ async function run() {
     console.log("✔ Connected to MySQL");
 
     // ── Create and select database ────────────────────────────────────────
-    await connection.query(
-      "CREATE DATABASE IF NOT EXISTS disaster_alert_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-    );
-    await connection.query("USE disaster_alert_db");
-    console.log("✔ Using disaster_alert_db");
+    // comment when using railway, since it auto-creates the database and user with limited permissions
+    // await connection.query(
+    //   "CREATE DATABASE IF NOT EXISTS disaster_alert_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
+    // );
+    // await connection.query("USE disaster_alert_db");
+    // console.log("✔ Using disaster_alert_db");
 
     // ── Apply schema (CREATE TABLE IF NOT EXISTS — idempotent) ───────────
     const schemaRaw = fs.readFileSync(
@@ -258,8 +261,6 @@ async function run() {
     await connection.query(schemaSql);
     console.log("✔ Schema applied");
 
-
-
     // ── Clear all data (FOREIGN_KEY_CHECKS off for safe truncation) ───────
     const TABLES = [
       "alerts",
@@ -270,6 +271,7 @@ async function run() {
       "locations",
       "admins",
     ];
+
     await connection.query("SET FOREIGN_KEY_CHECKS = 0");
     for (const t of TABLES) {
       await connection.query(`TRUNCATE TABLE ${t}`);
@@ -324,8 +326,6 @@ async function run() {
       );
     }
     console.log(`✔ Inserted ${RULES.length} global alert rules`);
-
-
 
     // ── Seed specific application admin ───────────────────────────────────
     const bcrypt = require("bcryptjs");
